@@ -37,10 +37,4 @@ int main()
     double s = 0;
     cout << Simpson(a, b, N);
     return 0;
-/*#pragma omp parallel num_threads(4)
-    {
-        cout << "Parallel";
-    }
-    return 0;
-*/
 }
