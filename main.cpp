@@ -8,25 +8,24 @@ double f(double x) {
     return sin(x) + cos(x);
 }
 
-double Simpson(double a, double b, int n)
-{
-    double h = (b - a) / n;
-    double sum1 = 0;
-    double sum2 = 0;
-    for (int k = 1; k <= n; k++)
+double Simpson(double a, double b, int n) {
+    const double width = (b-a)/n;
+    double simpson_integral = 0;
+#pragma omp parallel
     {
-        double xk = a + k * h;
-        if (k <= n - 1)
-        {
-            sum1 += f(xk);
+        double local_sum = 0;
+#pragma omp for
+        for (int step = 0; step < n; step++) {
+            const double x1 = a + step * width;
+            const double x2 = a + (step + 1) * width;
+
+            local_sum += (x2 - x1) / 6.0 * (f(x1) + 4.0 * f(0.5 * (x1 + x2)) + f(x2));
         }
+#pragma omp atomic
+        simpson_integral += local_sum;
+    };
 
-        double xk_1 = a + (k - 1) * h;
-        sum2 += f((xk + xk_1) / 2);
-    }
-
-    double result = h / 3 * (1 / 2 * f(a) + sum1 + 2 * sum2 + 1 / 2 * f(b));
-    return result;
+    return simpson_integral;
 }
 
 
