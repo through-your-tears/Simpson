@@ -1,14 +1,28 @@
 #include <iostream>
 #include <omp.h>
 #include <math.h>
-#define N 10000
+#include <time.h>
+#define N 100
 
 using namespace std;
 double f(double x) {
-    return sin(x) + cos(x);
+    return 2*x;
 }
 
 double Simpson(double a, double b, int n) {
+    const double width = (b-a)/n;
+    double simpson_integral = 0;
+
+    for (int step = 0; step < n; step++) {
+        const double x1 = a + step * width;
+        const double x2 = a + (step + 1) * width;
+
+        simpson_integral += (x2 - x1) / 6.0 * (f(x1) + 4.0 * f(0.5 * (x1 + x2)) + f(x2));
+    }
+    return simpson_integral;
+}
+
+double ompSimpson(double a, double b, int n) {
     const double width = (b-a)/n;
     double simpson_integral = 0;
 #pragma omp parallel
@@ -32,9 +46,14 @@ double Simpson(double a, double b, int n) {
 int main()
 {
     double a = 0;
-    const double pi = M_PI;
-    double b = pi;
+    //const double pi = M_PI;
+    double b = 2;
     double s = 0;
-    cout << Simpson(a, b, N);
+    double time = clock();
+    cout << Simpson(a, b, N) << "\n";
+    cout << clock() - time << "\n";
+    time = clock();
+    cout << ompSimpson(a, b, N) << "\n";
+    cout << clock() - time;
     return 0;
 }
