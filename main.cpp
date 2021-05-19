@@ -2,7 +2,7 @@
 #include <omp.h>
 #include <math.h>
 #include <time.h>
-#define N 100
+#define N 100000000
 
 using namespace std;
 double f(double x) {
@@ -49,11 +49,11 @@ int main()
     //const double pi = M_PI;
     double b = 2;
     double s = 0;
-    double time = clock();
+    double time = omp_get_wtime();
     cout << Simpson(a, b, N) << "\n";
-    cout << clock() - time << "\n";
-    time = clock();
+    cout << omp_get_wtime() - time << "\n";
+    time = omp_get_wtime();
     cout << ompSimpson(a, b, N) << "\n";
-    cout << clock() - time;
+    cout << omp_get_wtime() - time;
     return 0;
 }
